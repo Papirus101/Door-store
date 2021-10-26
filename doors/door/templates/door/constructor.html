@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load door_tags %}
+{% block content %}
+<div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
+    <h1>Конструктор</h1>
+    {% if price %}
+    <h1><strong>Сумма вашего расчёта состовляет {{ price }} p.</strong></h1>
+    {% endif %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        {% if message.tags == 'warning' %}
+        <div class="alert alert-danger" role="alert">
+            {% else %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {% endif %}
+                {{ message }}
+            </div>
+            {% endfor %}
+    </ul>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+        {{ user_form.as_p }}
+
+        <button class="btn btn-primary" type="submit" name="send_order">Отправить заявку</button>
+        <button class="btn btn-primary" type="submit" name="calculate_order">Расчитать цену</button>
+
+    </form>
+</div>
+{% endblock %}

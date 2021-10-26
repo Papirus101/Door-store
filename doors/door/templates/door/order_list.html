@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load door_tags %}
+{% block content %}
+<h1 align='center'><strong>Заказы</strong></h1>
+{% for order in object_list %}
+<div class="col-3">
+    <div class="card bg-dark" align="center" style="width: 18rem;">
+        {% if order.door.image %}
+        <img src="{{ order.door.image.url }}" width="150px">
+        {% endif %}
+        <div class="card-body text-white">
+            {% if order.active %}
+            <h5 class="card-title">{{ order.door.name }} <span class="badge bg-info text-dark">В работе</span></h5>
+            {% else %}
+            <h5 class="card-title">{{ order.door.name }} <span class="badge bg-success">Завершён</span></h5>
+            {% endif %}
+            {% if order.door.description %}
+            <p class="card-text">{{ door.description }}</p>
+            {% endif %}
+            <p class="card-text">Телефон заказчика: {{ order.user_phone }}</p>
+            {% if order.door.price %}
+            <p class="card-text">Цена: {{ door.price }} р. p. за 1 дверь</p>
+            {% else %}
+            <p>{{ order.door.style }}</p>
+            {% size_price order.door.pk as door_price %}
+            <p class="card-text">Цена: {{ door_price.summ }} p. за 1 дверь</p>
+            {% endif %}
+            {% if order.count_doors > 1 %}
+            <p class="card-text">Общая цена: {% widthratio door_price.summ 1 order.count_doors %}</p>
+            {% endif %}
+            <a href="{{ order.get_absolute_url }}" class="btn btn-primary">Узнать подробнее</a>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

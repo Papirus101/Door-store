@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-block" align='center'>
+{% if object.door.image %}
+<img src="{{ object.door.image.url }}" style="width: 100px;">
+{% endif %}
+<p>Количество дверей: {{ object.count_doors }}</p>
+<p>Номер телефона заказчика: {{ object.user_phone }}</p>
+<p>E-mail заказчика: {{ object.user_email }}</p>
+{% if object.active == True %}
+<p>Статус заказа: В работе</p>
+{% else %}
+<p>Статус заказа: Завершён</p>
+{% endif %}
+<p>Дата создания заявки: {{ object.date_start }}</p>
+<a href="{% url 'edit_order_manager' object.pk %}" class="btn btn-primary">Редактировать заявку</a>
+</div>
+{% endblock %}

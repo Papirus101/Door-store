@@ -1,0 +1,19 @@
+{% extends 'base.html'%}
+{% load door_tags %}
+{% block content %}
+<div class="card bg-dark" style="width: 18rem;">
+    <img src="{{ door.image.url }}" class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 class="card-title">{{ door.name }}</h5>
+        {% if door.description %}
+        <p class="card-text">{{ door.description }}</p>
+        {% endif %}
+        {% if door.price %}
+        <p class="card-text">Цена: {{ door.price }} р.</p>
+        {% else %}
+        {% size_price door.pk as door_price %}
+        <p class="card-text">Цена: {{ door_price.summ }}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

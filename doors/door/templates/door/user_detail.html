@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load door_tags %}
+{% block content %}
+{% if object.profile.photo %}
+<img src="{{ object.profile.photo.url }}" style="width: 500px;">
+{% endif %}
+{{object.manager}}
+<p>Имя пользователя: {{ object.username }}</p>
+<p>Имя: {{ object.first_name }}</p>
+<p>Фамилия: {{ object.last_name }}</p>
+<p>E-mail: {{ object.email }}</p>
+<p>Номер телефона: {{ object.profile.phone }}</p>
+{% endblock %}
