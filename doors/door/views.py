@@ -107,8 +107,11 @@ class ConstrucorDoor(View):
             door = form_door.save()
             door.name = f'{door.material} {door.style}'
             door.save()
-            if 'send_order' in request.POST:
-                user = User.objects.filter(groups__name='Менеджер').annotate(count_orders=Count('profile__orders')).order_by('count_orders')[0]
+            if ['send_order', 'add_order'] in request.POST:
+                if 'add_order' in request.POST:
+                    user = User.objects.get(username=request.user.username)
+                elif 'send_order' in request.POST:
+                    user = User.objects.filter(groups__name='Менеджер').annotate(count_orders=Count('profile__orders')).order_by('count_orders')[0]
                 new_order = form_order.save()
                 new_order.door = door
                 new_order.save()

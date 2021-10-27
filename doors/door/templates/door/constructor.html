@@ -24,8 +24,11 @@
 
         {{ form_door.as_p }}
         {{ form_order.as_p }}
-
+        {% if request.user|has_manager %}
+        <button class="btn btn-primary" type="submit" name="add_order">Добавить заявку</button>
+        {% else %}
         <button class="btn btn-primary" type="submit" name="send_order">Отправить заявку</button>
+        {% endif %}
         <button class="btn btn-primary" type="submit" name="calculate_order">Расчитать цену</button>
 
     </form>
