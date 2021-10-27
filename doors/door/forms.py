@@ -54,11 +54,11 @@ class NewDoorOrder(forms.ModelForm):
 
 
 class NewOrderForm(forms.ModelForm):
-    phone = PhoneNumberField(label='Телефон', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    user_phone = PhoneNumberField(label='Телефон', widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Order
-        fields = ['user_email', 'count_doors']
+        fields = ['user_email', 'count_doors', 'user_phone']
         widgets = {
             'user_email': forms.EmailInput(attrs={'class': 'form-control'}),
             'count_doors': forms.NumberInput(attrs={'class': 'form-control'}),

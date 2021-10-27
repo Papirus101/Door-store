@@ -93,24 +93,6 @@ def logout_user(request):
     return redirect('index')
 
 
-def calculate_sum_door(form) -> int:
-    """ Высчитывает цену двери """
-    form_material = form.cleaned_data['material']
-    material_price = int(MaterialDoor.objects.get(name=form_material).price)
-    width_price = int(form.cleaned_data['width']) * material_price
-    height_price = int(form.cleaned_data['height']) * material_price
-    depth_price = int(form.cleaned_data['depth']) * material_price
-    sash_price = int(SashDoor.objects.get(name=form.cleaned_data['sash']).price)
-    style_price = int(StyleDoor.objects.get(name=form.cleaned_data['style']).price)
-    if form.cleaned_data['closer'] is True:
-        closer_price = int(CloserDoor.objects.get(name=form.cleaned_data['closer']).price)
-    else:
-        closer_price = 0
-    summ = width_price + height_price + depth_price + sash_price + style_price + closer_price
-    print(width_price, height_price, depth_price, sash_price, style_price, closer_price)
-    return summ
-
-
 class ConstrucorDoor(View):
 
     def get(self, request, *args, **kwargs):
@@ -128,6 +110,8 @@ class ConstrucorDoor(View):
             if 'send_order' in request.POST:
                 user = User.objects.filter(groups__name='Менеджер').annotate(count_orders=Count('profile__orders')).order_by('count_orders')[0]
                 new_order = form_order.save()
+                new_order.door = door
+                new_order.save()
                 messages.success(request,
                                  f'Вы успешно оформили заявку, ваш менеджер {user.first_name} скоро с вами свяжется')
                 user.profile.orders.add(new_order)
@@ -144,39 +128,21 @@ class ConstrucorDoor(View):
 
 class EditOrderManager(View):
 
-    def get_initial(self):
-        order = Order.objects.get(id=self.kwargs['pk'])
-        initial = {}
-        initial['count'] = order.count_doors
-        initial['phone'] = order.user_phone
-        initial['email'] = order.user_email
-        initial['description'] = order.door.description
-        initial['width'] = order.door.width
-        initial['height'] = order.door.height
-        initial['depth'] = order.door.depth
-        initial['sash'] = order.door.sash.pk
-        initial['style'] = order.door.style.pk
-        initial['glass'] = order.door.glass
-        initial['material'] = order.door.material.pk
-        initial['closer'] = order.door.closer.pk
-        return initial
-
     def get(self, request, *args, **kwargs):
-        form = NewDoorOrder(initial=self.get_initial())
-        return render(request, 'door/constructor.html', {'form': form})
+        order = Order.objects.get(pk=kwargs['pk'])
+        form_door = NewDoorOrder(instance=order.door)
+        form_order = NewOrderForm(instance=order)
+        return render(request, 'door/constructor.html', {'form_door': form_door, 'form_order': form_order})
 
     def post(self, request, *args, **kwargs):
-        order = Order.objects.get(pk=self.kwargs['pk'])
-        door = Door.objects.get(pk=order.door.pk)
-        form = NewDoorOrder(request.POST, instance=door)
-        if form.is_valid():
+        order = Order.objects.get(pk=kwargs['pk'])
+        form_door = NewDoorOrder(request.POST, instance=order.door)
+        form_order = NewOrderForm(request.POST, instance=order)
+        if form_door.is_valid() and form_order.is_valid():
+            door = form_door.save()
             if 'send_order' in request.POST:
-                form.save()
-                order.user_phone = form.cleaned_data['phone']
-                order.user_email = form.cleaned_data['email']
-                order.count_doors = form.cleaned_data['count']
-                order.save()
+                form_order.save()
                 return HttpResponseRedirect(reverse('order_detail', kwargs={'pk': self.kwargs['pk']}))
             elif 'calculate_order' in request.POST:
-                summ = calculate_door(order.door.pk)
-                return render(request, 'door/constructor.html', {'form': form, 'price': summ})
+                summ = calculate_door(door.pk)
+                return render(request, 'door/constructor.html', {'form_door': form_door, 'form_order': form_order, 'price': summ})
