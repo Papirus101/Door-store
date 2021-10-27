@@ -8,37 +8,41 @@
 
 {% block content %}
 {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        {% if message.tags == 'warning' %}
-        <div class="alert alert-danger" role="alert">
-            {% else %}
-            <div class="alert alert-{{ message.tags }}" role="alert">
-                {% endif %}
-                {{ message }}
-            </div>
-            {% endfor %}
-    </ul>
-    {% endif %}
+<ul class="messages">
+    {% for message in messages %}
+    {% if message.tags == 'warning' %}
+    <div class="alert alert-danger" role="alert">
+        {% else %}
+        <div class="alert alert-{{ message.tags }}" role="alert">
+            {% endif %}
+            {{ message }}
+        </div>
+        {% endfor %}
+</ul>
+{% endif %}
+{% if object_list %}
 {% for door in object_list %}
 <h1 style="text-align: center;">Наши лучшие готовые предложения</h1>
 <div class="col-3">
-  <div class="card bg-dark" style="width: 18rem;">
-    <img src="{{ door.image.url }}" width="150px">
-    <div class="card-body text-white">
-      <h5 class="card-title">{{ door.name }}</h5>
-      {% if door.description %}
-      <p class="card-text">{{ door.description }}</p>
-      {% endif %}
-      {% if door.price %}
-      <p class="card-text">Цена: {{ door.price }} р.</p>
-      {% else %}
-      {% size_price door.pk as door_price %}
-      <p class="card-text">Цена: {{ door_price.summ }} р. за 1 шт.</p>
-      {% endif %}
-      <a href="{{ door.get_absolute_url }}" class="btn btn-primary">Узнать подробнее</a>
+    <div class="card bg-dark" style="width: 18rem;">
+        <img src="{{ door.image.url }}" width="150px">
+        <div class="card-body text-white">
+            <h5 class="card-title">{{ door.name }}</h5>
+            {% if door.description %}
+            <p class="card-text">{{ door.description }}</p>
+            {% endif %}
+            {% if door.price %}
+            <p class="card-text">Цена: {{ door.price }} р.</p>
+            {% else %}
+            {% size_price door.pk as door_price %}
+            <p class="card-text">Цена: {{ door_price.summ }} р. за 1 шт.</p>
+            {% endif %}
+            <a href="{{ door.get_absolute_url }}" class="btn btn-primary">Узнать подробнее</a>
+        </div>
     </div>
-  </div>
 </div>
 {% endfor %}
+{% else %}
+<h1>Актуальных предложений нет</h1>
+{% endif %}
 {% endblock %}
