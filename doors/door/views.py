@@ -37,7 +37,7 @@ class OrdersList(LoginRequiredMixin, ListView):
     template_name = 'door/order_list.html'
 
     def get_queryset(self):
-        return Order.objects.filter(orders__user__username=self.kwargs['username']).order_by('-active')
+        return Order.objects.filter(orders__user__username=self.kwargs['username']).order_by('-active', '-pk')
 
 
 class OrderDetail(LoginRequiredMixin, DetailView):
@@ -93,6 +93,14 @@ def logout_user(request):
     return redirect('index')
 
 
+def save_order(user, form_order, door) -> None:
+    """ Сохраняет новый заказ """
+    new_order = form_order.save()
+    new_order.door = door
+    new_order.save()
+    user.profile.orders.add(new_order)
+
+
 class ConstrucorDoor(View):
 
     def get(self, request, *args, **kwargs):
@@ -107,17 +115,17 @@ class ConstrucorDoor(View):
             door = form_door.save()
             door.name = f'{door.material} {door.style}'
             door.save()
-            if ['send_order', 'add_order'] in request.POST:
-                if 'add_order' in request.POST:
-                    user = User.objects.get(username=request.user.username)
-                elif 'send_order' in request.POST:
-                    user = User.objects.filter(groups__name='Менеджер').annotate(count_orders=Count('profile__orders')).order_by('count_orders')[0]
-                new_order = form_order.save()
-                new_order.door = door
-                new_order.save()
+            if 'send_order' in request.POST:
+                user = User.objects.filter(groups__name='Менеджер').annotate(count_orders=Count('profile__orders')).order_by('count_orders')[0]
+                save_order(user, form_order, door)
                 messages.success(request,
                                  f'Вы успешно оформили заявку, ваш менеджер {user.first_name} скоро с вами свяжется')
-                user.profile.orders.add(new_order)
+                return redirect('index')
+            elif 'add_order' in request.POST:
+                user = User.objects.get(username=request.user.username)
+                save_order(user, form_order, door)
+                messages.success(request,
+                                 f'Заявка успешно добавлена')
                 return redirect('index')
             elif 'calculate_order' in request.POST:
                 summ = calculate_door(door.pk)
