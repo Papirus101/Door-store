@@ -22,8 +22,8 @@
     <form method="post">
         {% csrf_token %}
 
-        {{ form.as_p }}
-        {{ user_form.as_p }}
+        {{ form_door.as_p }}
+        {{ form_order.as_p }}
 
         <button class="btn btn-primary" type="submit" name="send_order">Отправить заявку</button>
         <button class="btn btn-primary" type="submit" name="calculate_order">Расчитать цену</button>

@@ -3,9 +3,7 @@ from ..models import Door
 
 def calculate_door(door_pk):
     door = Door.objects.get(pk=door_pk)
-    print(door)
     price = door.material.price
-    print(price)
     width = door.width * price
     height = door.height * price
     depth = door.depth * price

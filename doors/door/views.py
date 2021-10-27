@@ -9,7 +9,7 @@ from django.views.generic.base import View
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import NewDoorOrder, ProfileRegister, UserRegisterForm, LoginUserForm
+from .forms import NewDoorOrder, ProfileRegister, UserRegisterForm, LoginUserForm, NewOrderForm
 from .logic.calculate import calculate_door
 
 from .models import CloserDoor, Door, MaterialDoor, Order, Profile, SashDoor, StyleDoor
@@ -114,25 +114,29 @@ def calculate_sum_door(form) -> int:
 class ConstrucorDoor(View):
 
     def get(self, request, *args, **kwargs):
-        form = NewDoorOrder()
-        return render(request, 'door/constructor.html', {'form': form})
+        form_door = NewDoorOrder()
+        form_order = NewOrderForm()
+        return render(request, 'door/constructor.html', {'form_door': form_door, 'form_order': form_order})
 
     def post(self, request, *args, **kwargs):
-        form = NewDoorOrder(request.POST)
-        if form.is_valid():
+        form_door = NewDoorOrder(request.POST)
+        form_order = NewOrderForm(request.POST)
+        if form_door.is_valid() and form_order.is_valid():
+            door = form_door.save()
+            door.name = f'{door.material} {door.style}'
+            door.save()
             if 'send_order' in request.POST:
-                door = form.save()
-                door.name = f'{door.material} {door.style}'
-                door.save()
                 user = User.objects.filter(groups__name='Менеджер').annotate(count_orders=Count('profile__orders')).order_by('count_orders')[0]
-                new_order = Order(door=door, user_phone=form.cleaned_data['phone'], user_email=form.cleaned_data['email'], count=form.cleaned_data['count'])
-                new_order.save()
-                messages.success(request, f'Вы успешно оформили заявку, ваш менеджер {user.first_name} скоро с вами свяжется')
+                new_order = form_order.save()
+                messages.success(request,
+                                 f'Вы успешно оформили заявку, ваш менеджер {user.first_name} скоро с вами свяжется')
                 user.profile.orders.add(new_order)
                 return redirect('index')
             elif 'calculate_order' in request.POST:
-                summ = calculate_door(form)
-                return render(request, 'door/constructor.html', {'form': form, 'price': summ})
+                summ = calculate_door(door.pk)
+                door.delete()
+                return render(request, 'door/constructor.html',
+                              {'form_door': form_door, 'form_order': form_order, 'price': summ})
         else:
             form = NewDoorOrder(request.POST)
             return render(request, 'door/constructor.html', {'form': form})

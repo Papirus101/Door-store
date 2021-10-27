@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django import forms
-from .models import Door, Profile
+from .models import Door, Profile, Order
 
 from phonenumber_field.formfields import PhoneNumberField
 
@@ -33,16 +33,13 @@ class LoginUserForm(AuthenticationForm):
 
 
 class NewDoorOrder(forms.ModelForm):
-    count = forms.IntegerField(label='Количество дверей',
-                               widget=forms.NumberInput(attrs={'class': 'form-control', 'value': 1}))
-    phone = PhoneNumberField(label='Телефон', widget=forms.TextInput(attrs={'class': 'form-control'}))
-    email = forms.EmailField(label='Почта', widget=forms.EmailInput(attrs={'class': 'form-control'}))
-    description = forms.CharField(label='Коментарий', widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
-                                  required=False)
 
     class Meta:
         model = Door
-        fields = ['width', 'height', 'depth', 'sash', 'style', 'glass', 'material', 'closer']
+        fields = ['width', 'height', 'depth', 'sash', 'style', 'glass', 'material', 'closer', 'description']
+        labels = {
+            'description': 'Коментарий к заказу'
+        }
         widgets = {
             'width': forms.NumberInput(attrs={'class': 'form-control'}),
             'height': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -52,4 +49,17 @@ class NewDoorOrder(forms.ModelForm):
             'glass': forms.NullBooleanSelect(attrs={'class': 'form-control'}),
             'material': forms.Select(attrs={'class': 'form-control'}),
             'closer': forms.Select(attrs={'class': 'form-control'}),
+            'description': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class NewOrderForm(forms.ModelForm):
+    phone = PhoneNumberField(label='Телефон', widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Order
+        fields = ['user_email', 'count_doors']
+        widgets = {
+            'user_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'count_doors': forms.NumberInput(attrs={'class': 'form-control'}),
         }
