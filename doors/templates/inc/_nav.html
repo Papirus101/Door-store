@@ -14,9 +14,6 @@
           <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Готовые варианты</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="{% url 'constructor' %}">Конструктор</a>
         </li>
         {% if request.user|has_manager %}
