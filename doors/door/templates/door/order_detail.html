@@ -1,27 +1,47 @@
 {% extends 'base.html' %}
+{% block head %}
+<script src="https://kit.fontawesome.com/2a16ef6741.js" crossorigin="anonymous"></script>
+{% endblock %}
 {% block content %}
 <div class="d-block" align='center'>
     {% if object.door.image %}
     <img src="{{ object.door.image.url }}" style="width: 100px;">
     {% endif %}
-    <p>Количество дверей: {{ object.count_doors }}</p>
-    <h1>Информация о двери:</h1>
-    <p>{{ object.door.name }}</p>
-    <p>Коментарий заказчика: {{ object.door.description }}</p>
-    <p>Ширина: {{ object.door.width }} | Высота: {{ object.door.height }} | Глубина: {{ object.door.depth }}</p>
-    {% if object.door.sash %}
-    <p>Количество створок: {{ object.door.sash.name }}</p>
-    {% else %}
-    <p>Количество створок: уточнить у заказчика</p>
-    {% endif %}
-
-    <p>Номер телефона заказчика: {{ object.user_phone }}</p>
-    <p>E-mail заказчика: {{ object.user_email }}</p>
+    <h2>Информация о двери:</h2>
     {% if object.active == True %}
     <span class="badge bg-info text-dark">В работе</span>
     {% else %}
     <span class="badge bg-success">Завершён</span>
     {% endif %}
+    <p>{{ object.door.name }}</p>
+    <p><i class="fas fa-comments"></i> Коментарий заказчика: {{ object.door.description }}</p>
+    <p><i class="fas fa-arrows-alt-h"></i> Ширина: {{ object.door.width }} | <i class="fas fa-arrows-alt-v"></i> Высота: {{ object.door.height }} | Глубина: {{ object.door.depth }}</p>
+    {% if object.door.sash %}
+    <p>Количество створок: {{ object.door.sash.name }}</p>
+    {% else %}
+    <p>Количество створок: уточнить у заказчика</p>
+    {% endif %}
+    {% if object.door.style %}
+    <p><i class="fas fa-burn"></i> Стиль двери: {{ object.door.style.name }}</p>
+    {% else %}
+    <p><i class="fas fa-burn"></i> Стиль двери: уточнить у заказчика</p>
+    {% endif %}
+    <p><i class="fas fa-door-open"></i> Наличие стекла в двери {{ object.door.glass }}</p>
+    {% if object.door.material %}
+    <p>Материал двери: {{ object.door.material.name }}</p>
+    {% else %}
+    <p>Материал двери: уточнить у заказчика</p>
+    {% endif %}
+    {% if object.door.closer %}
+    <p>Доводчик: {{ object.door.closer.name }}</p>
+    {% else %}
+    <p>Доводчик: уточнить у заказчика</p>
+    {% endif %}
+    <p>Количество дверей: {{ object.count_doors }}</p>
+    <h2> Информация о заказчике</h2>
+    <p><i class="fas fa-phone-alt"></i> Номер телефона заказчика: {{ object.user_phone }}</p>
+    <p><i class="fas fa-at"></i> E-mail заказчика: {{ object.user_email }}</p>
+    <h4>Прочая информация</h4>
     <p>Дата создания заявки: {{ object.date_start }}</p>
     <a href="{% url 'edit_order_manager' object.pk %}" class="btn btn-primary">Редактировать заявку</a>
 </div>

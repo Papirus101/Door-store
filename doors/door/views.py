@@ -151,7 +151,7 @@ class EditOrderManager(View):
         form_order = NewOrderForm(request.POST, instance=order)
         if form_door.is_valid() and form_order.is_valid():
             door = form_door.save()
-            if 'send_order' in request.POST:
+            if 'add_order' in request.POST:
                 form_order.save()
                 return HttpResponseRedirect(reverse('order_detail', kwargs={'pk': self.kwargs['pk']}))
             elif 'calculate_order' in request.POST:
