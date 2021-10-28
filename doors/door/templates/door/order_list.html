@@ -25,9 +25,6 @@
             {% size_price order.door.pk as door_price %}
             <p class="card-text">Цена: {{ door_price.summ }} p. за 1 дверь</p>
             {% endif %}
-            {% if order.count_doors > 1 %}
-            <p class="card-text">Общая цена: {% widthratio door_price.summ 1 order.count_doors %}</p>
-            {% endif %}
             <a href="{{ order.get_absolute_url }}" class="btn btn-primary">Узнать подробнее</a>
         </div>
     </div>

@@ -40,7 +40,7 @@ class OrdersList(LoginRequiredMixin, ListView):
     template_name = 'door/order_list.html'
 
     def get_queryset(self):
-        return Order.objects.filter(orders__user__username=self.kwargs['username']).order_by('-active', '-pk')
+        return Order.objects.filter(orders__user__username=self.kwargs['username']).order_by('-active', '-pk').select_related('door')
 
 
 class OrderDetail(LoginRequiredMixin, DetailView):
