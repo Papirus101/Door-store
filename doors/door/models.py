@@ -8,13 +8,14 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Door(models.Model):
-    name = models.CharField('Дверь', max_length=150)
+    name = models.CharField('Дверь', max_length=150, blank=True)
     slug = models.SlugField('Ссылка на дверь ( генерируется автоматически )')
     description = models.TextField('Описание двери', blank=True, null=True)
     image = models.ImageField(
         'Картинка двери', upload_to='door/image_door/', blank=True, null=True)
     price = models.IntegerField(
         'Цена двери ( не обязательно )', blank=True, null=True)
+    personal_margin = models.IntegerField('Персональная наценка', default=0, blank=True)
     show_on_index = models.BooleanField(
         'Показывать на главной странице', default=False)
     width = models.IntegerField('Ширина проёма')
@@ -125,7 +126,7 @@ def save_user_profile(sender, instance, **kwargs):
 class Order(models.Model):
     door = models.ForeignKey(Door, on_delete=models.CASCADE,
                              related_name='doors', verbose_name='Дверь', null=True, blank=True)
-    count_doors = models.PositiveIntegerField('Количество дверей', default=1)
+    count_doors = models.PositiveIntegerField('Количество дверей', default=1, blank=True)
     user_phone = PhoneNumberField()
     user_email = models.EmailField('Почта', blank=True, null=True)
     active = models.BooleanField('Заказ находится в работе', default=True)
@@ -133,6 +134,7 @@ class Order(models.Model):
     date_finish = models.DateField(
         'Дата окончания заказа', blank=True, null=True)
     is_view = models.BooleanField('Просмотрено', default=False)
+    company_name = models.CharField('Название компании', max_length=255, blank=True)
 
     class Meta:
         verbose_name = 'заказ'

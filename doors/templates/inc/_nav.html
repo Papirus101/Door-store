@@ -18,7 +18,7 @@
         </li>
         {% if request.user|has_manager %}
         <li class="nav-item">
-          <a href="{% url 'orders' user.username %}" class="nav-link" aria-current="page">
+          <a href="{% url 'orders_open' user.username %}" class="nav-link" aria-current="page">
             Заявки
             {% if request.user|has_unread %}
             <span class=" rounded-pill bg-danger badge" style="float: right;">!</span>
@@ -38,7 +38,7 @@
         <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
           <li><a class="dropdown-item" href="{{ user.profile.get_absolute_url }}">Профиль</a></li>
           {% if request.user|has_manager %}
-          <li><a class="dropdown-item" href="{% url 'orders' user.username %}">Заказы</a></li>
+          <li><a class="dropdown-item" href="{% url 'orders_open' user.username %}">Заказы</a></li>
           {% endif %}
           <li>
             <hr class="dropdown-divider">

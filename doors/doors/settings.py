@@ -128,6 +128,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'kirilovilya@mail.ru'
+EMAIL_HOST_PASSWORD = 'XoxxxoL_TOP'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 

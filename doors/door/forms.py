@@ -36,9 +36,11 @@ class NewDoorOrder(forms.ModelForm):
 
     class Meta:
         model = Door
-        fields = ['width', 'height', 'depth', 'sash', 'style', 'glass', 'material', 'closer', 'description']
+        fields = ['width', 'height', 'depth', 'sash', 'style', 'glass', 'material', 'closer', 'price',
+                  'personal_margin', 'name', 'description']
         labels = {
-            'description': 'Коментарий к заказу'
+            'description': 'Коментарий к заказу',
+            'name': 'Название заказа ( видно только вам )'
         }
         widgets = {
             'width': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -50,7 +52,17 @@ class NewDoorOrder(forms.ModelForm):
             'material': forms.Select(attrs={'class': 'form-control'}),
             'closer': forms.Select(attrs={'class': 'form-control'}),
             'description': forms.TextInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'personal_margin': forms.NumberInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, manager=False, *args, **kwargs):
+        super(NewDoorOrder, self).__init__(*args, **kwargs)
+        if not manager:
+            self.fields['price'].widget = forms.HiddenInput()
+            self.fields['personal_margin'].widget = forms.HiddenInput()
+            self.fields['name'].widget = forms.HiddenInput()
 
 
 class NewOrderForm(forms.ModelForm):
@@ -58,8 +70,14 @@ class NewOrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = ['user_email', 'count_doors', 'user_phone']
+        fields = ['user_email', 'count_doors', 'user_phone', 'company_name']
         widgets = {
             'user_email': forms.EmailInput(attrs={'class': 'form-control'}),
             'count_doors': forms.NumberInput(attrs={'class': 'form-control'}),
+            'company_name': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, manager: bool = False, *args, **kwargs):
+        super(NewOrderForm, self).__init__(*args, **kwargs)
+        if manager is False:
+            self.fields['company_name'].widget = forms.HiddenInput()

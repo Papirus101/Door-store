@@ -12,7 +12,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import NewDoorOrder, ProfileRegister, UserRegisterForm, LoginUserForm, NewOrderForm
 from .logic.calculate import calculate_door
 
-from .models import CloserDoor, Door, MaterialDoor, Order, Profile, SashDoor, StyleDoor
+from .models import Door, Order, Profile
+
+from django.core.mail import send_mail
 
 
 class Index(ListView):
@@ -33,6 +35,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
 
 class OrdersList(LoginRequiredMixin, ListView):
+    """ Список заказов """
     model = Profile
     template_name = 'door/order_list.html'
 
@@ -41,6 +44,7 @@ class OrdersList(LoginRequiredMixin, ListView):
 
 
 class OrderDetail(LoginRequiredMixin, DetailView):
+    """ Отдаёт детали заказа """
     model = Order
 
     def get_context_data(self, **kwargs):
@@ -55,6 +59,7 @@ class OrderDetail(LoginRequiredMixin, DetailView):
 
 
 def register(request):
+    """ Регистрация пользователя """
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         form_profile = ProfileRegister(request.POST)
@@ -74,6 +79,7 @@ def register(request):
 
 
 def login_user(request):
+    """ Авторизация пользователя """
     if request.method == 'POST':
         form = LoginUserForm(data=request.POST)
         if form.is_valid():
@@ -94,7 +100,7 @@ def logout_user(request):
 
 
 def save_order(user, form_order, door) -> None:
-    """ Сохраняет новый заказ """
+    """ Сохраняет новый заказ и выдаёт пользователю """
     new_order = form_order.save()
     new_order.door = door
     new_order.save()
@@ -102,6 +108,7 @@ def save_order(user, form_order, door) -> None:
 
 
 class ConstrucorDoor(View):
+    """ Конструктор двери """
 
     def get(self, request, *args, **kwargs):
         form_door = NewDoorOrder()
@@ -109,14 +116,17 @@ class ConstrucorDoor(View):
         return render(request, 'door/constructor.html', {'form_door': form_door, 'form_order': form_order})
 
     def post(self, request, *args, **kwargs):
-        form_door = NewDoorOrder(request.POST)
-        form_order = NewOrderForm(request.POST)
+        form_door = NewDoorOrder(False, request.POST)
+        form_order = NewOrderForm(False, request.POST)
         if form_door.is_valid() and form_order.is_valid():
             door = form_door.save()
-            door.name = f'{door.material} {door.style}'
+            door.name = f'Новая заявка # {door.pk}'
             door.save()
             if 'send_order' in request.POST:
-                user = User.objects.filter(groups__name='Менеджер').annotate(count_orders=Count('profile__orders')).order_by('count_orders')[0]
+                user = \
+                    User.objects.filter(groups__name='Менеджер').annotate(
+                        count_orders=Count('profile__orders')).order_by(
+                        'count_orders')[0]
                 save_order(user, form_order, door)
                 messages.success(request,
                                  f'Вы успешно оформили заявку, ваш менеджер {user.first_name} скоро с вами свяжется')
@@ -133,27 +143,44 @@ class ConstrucorDoor(View):
                 return render(request, 'door/constructor.html',
                               {'form_door': form_door, 'form_order': form_order, 'price': summ})
         else:
-            form = NewDoorOrder(request.POST)
-            return render(request, 'door/constructor.html', {'form': form})
+            form_door = NewDoorOrder(False, request.POST)
+            form_order = NewOrderForm(False, request.POST)
+            return render(request, 'door/constructor.html', {'form_door': form_door, 'form_order': form_order})
 
 
 class EditOrderManager(View):
+    """ Редактирование заказа менеджером """
 
     def get(self, request, *args, **kwargs):
         order = Order.objects.get(pk=kwargs['pk'])
-        form_door = NewDoorOrder(instance=order.door)
-        form_order = NewOrderForm(instance=order)
+        form_door = NewDoorOrder(manager=True, instance=order.door)
+        form_order = NewOrderForm(manager=True, instance=order)
         return render(request, 'door/constructor.html', {'form_door': form_door, 'form_order': form_order})
 
     def post(self, request, *args, **kwargs):
         order = Order.objects.get(pk=kwargs['pk'])
-        form_door = NewDoorOrder(request.POST, instance=order.door)
-        form_order = NewOrderForm(request.POST, instance=order)
+        form_door = NewDoorOrder(True, request.POST, instance=order.door)
+        form_order = NewOrderForm(True, request.POST, instance=order)
         if form_door.is_valid() and form_order.is_valid():
-            door = form_door.save()
+            door = form_door.save(commit=False)
+            order = form_order.save(commit=False)
             if 'add_order' in request.POST:
-                form_order.save()
+                door.save()
+                order.save()
                 return HttpResponseRedirect(reverse('order_detail', kwargs={'pk': self.kwargs['pk']}))
             elif 'calculate_order' in request.POST:
                 summ = calculate_door(door.pk)
-                return render(request, 'door/constructor.html', {'form_door': form_door, 'form_order': form_order, 'price': summ})
+                context = {'form_door': form_door, 'form_order': form_order, 'price': summ}
+        else:
+            form_door = NewDoorOrder(True, request.POST, instance=order.door)
+            form_order = NewOrderForm(True, request.POST, instance=order)
+            context = {'form_door': form_door, 'form_order': form_order}
+        return render(request, 'door/constructor.html', context)
+
+
+class CheckEdit(View):
+    """ Подготовка к отправке счёта """
+
+    def get(self, request, *args, **kwargs):
+        order = Order.objects.get(pk=kwargs['pk'])
+        return render(request, 'door/check_edit.html', {'order': order})
