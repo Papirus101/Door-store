@@ -19,12 +19,12 @@
             {% endif %}
             <p class="card-text">Телефон заказчика: {{ order.user_phone }}</p>
             {% if order.door.price %}
-            <p class="card-text">Цена: {{ door.price }} р. p. за 1 дверь</p>
+            <p class="card-text">Цена: {{ order.door.price }} р. за 1 дверь</p>
             {% else %}
-            <p>{{ order.door.style }}</p>
             {% size_price order.door.pk as door_price %}
             <p class="card-text">Цена: {{ door_price.summ }} p. за 1 дверь</p>
             {% endif %}
+            <p>{{ order.door.style }}</p>
             <a href="{{ order.get_absolute_url }}" class="btn btn-primary">Узнать подробнее</a>
         </div>
     </div>

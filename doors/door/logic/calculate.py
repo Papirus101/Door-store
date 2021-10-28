@@ -2,7 +2,6 @@ from ..models import Door
 
 
 def calculate_door(door_pk):
-    print(door_pk)
     door = Door.objects.get(pk=door_pk)
     if door.material:
         price = door.material.price
