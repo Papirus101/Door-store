@@ -111,13 +111,13 @@ class ConstrucorDoor(View):
     """ Конструктор двери """
 
     def get(self, request, *args, **kwargs):
-        form_door = NewDoorOrder()
-        form_order = NewOrderForm()
+        form_door = NewDoorOrder(request.user)
+        form_order = NewOrderForm(request.user)
         return render(request, 'door/constructor.html', {'form_door': form_door, 'form_order': form_order})
 
     def post(self, request, *args, **kwargs):
-        form_door = NewDoorOrder(False, request.POST)
-        form_order = NewOrderForm(False, request.POST)
+        form_door = NewDoorOrder(request.user, request.POST)
+        form_order = NewOrderForm(request.user, request.POST)
         if form_door.is_valid() and form_order.is_valid():
             door = form_door.save()
             door.name = f'Новая заявка # {door.pk}'
@@ -143,8 +143,8 @@ class ConstrucorDoor(View):
                 return render(request, 'door/constructor.html',
                               {'form_door': form_door, 'form_order': form_order, 'price': summ})
         else:
-            form_door = NewDoorOrder(False, request.POST)
-            form_order = NewOrderForm(False, request.POST)
+            form_door = NewDoorOrder(request.user, request.POST)
+            form_order = NewOrderForm(request.user, request.POST)
             return render(request, 'door/constructor.html', {'form_door': form_door, 'form_order': form_order})
 
 
@@ -153,14 +153,14 @@ class EditOrderManager(View):
 
     def get(self, request, *args, **kwargs):
         order = Order.objects.get(pk=kwargs['pk'])
-        form_door = NewDoorOrder(manager=True, instance=order.door)
-        form_order = NewOrderForm(manager=True, instance=order)
+        form_door = NewDoorOrder(request.user, instance=order.door)
+        form_order = NewOrderForm(request.user, instance=order)
         return render(request, 'door/constructor.html', {'form_door': form_door, 'form_order': form_order})
 
     def post(self, request, *args, **kwargs):
         order = Order.objects.get(pk=kwargs['pk'])
-        form_door = NewDoorOrder(True, request.POST, instance=order.door)
-        form_order = NewOrderForm(True, request.POST, instance=order)
+        form_door = NewDoorOrder(request.user, request.POST, instance=order.door)
+        form_order = NewOrderForm(request.user, request.POST, instance=order)
         if form_door.is_valid() and form_order.is_valid():
             door = form_door.save(commit=False)
             order = form_order.save(commit=False)
@@ -172,8 +172,8 @@ class EditOrderManager(View):
                 summ = calculate_door(door.pk)
                 context = {'form_door': form_door, 'form_order': form_order, 'price': summ}
         else:
-            form_door = NewDoorOrder(True, request.POST, instance=order.door)
-            form_order = NewOrderForm(True, request.POST, instance=order)
+            form_door = NewDoorOrder(request.user, request.POST, instance=order.door)
+            form_order = NewOrderForm(request.user, request.POST, instance=order)
             context = {'form_door': form_door, 'form_order': form_order}
         return render(request, 'door/constructor.html', context)
 

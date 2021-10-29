@@ -5,6 +5,8 @@ from .models import Door, Profile, Order
 
 from phonenumber_field.formfields import PhoneNumberField
 
+from .templatetags.door_tags import has_group
+
 
 class UserRegisterForm(UserCreationForm):
     username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -57,9 +59,9 @@ class NewDoorOrder(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-    def __init__(self, manager=False, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(NewDoorOrder, self).__init__(*args, **kwargs)
-        if not manager:
+        if not has_group(user):
             self.fields['price'].widget = forms.HiddenInput()
             self.fields['personal_margin'].widget = forms.HiddenInput()
             self.fields['name'].widget = forms.HiddenInput()

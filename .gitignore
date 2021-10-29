@@ -4,3 +4,4 @@
 /.gitignore
 /doors/media
 /doors/door/migrations
+/doors/.env

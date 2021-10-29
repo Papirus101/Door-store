@@ -128,7 +128,7 @@ class Order(models.Model):
                              related_name='doors', verbose_name='Дверь', null=True, blank=True)
     count_doors = models.PositiveIntegerField('Количество дверей', default=1, blank=True)
     user_phone = PhoneNumberField()
-    user_email = models.EmailField('Почта', blank=True, null=True)
+    user_email = models.EmailField('Почта')
     active = models.BooleanField('Заказ находится в работе', default=True)
     date_start = models.DateField('Дата старта заказа', auto_now=True)
     date_finish = models.DateField(

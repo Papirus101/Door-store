@@ -7,7 +7,7 @@
     <img src="{{ order.door.image.url }}" style="width: 100px;">
     {% endif %}
     <h2>Информация о двери:</h2>
-    {% if order.active == True %}
+    {% if order.active %}
     <span class="badge bg-info text-dark">В работе</span>
     ev0NyenP0UxLkY231UKA
     {% else %}
@@ -41,6 +41,30 @@
     <p>Доводчик: <span class="badge bg-danger">уточнить у заказчика</span></p>
     {% endif %}
     <p>Количество дверей: {{ order.count_doors }}</p>
+    {% if order.door.price %}
+    <p>Чистая цена за 1 дверь: {{ order.door.price }} p.</p>
+    {% else %}
+    {% size_price order.door.pk as door_price %}
+    <p>Чистая цена за 1 дверь: <span
+            class="badge bg-danger">{{ door_price.summ }} p. ( сгенерировано автоматически )</span></p>
+    {% endif %}
+    {% if order.door.personal_margin %}
+    <p>Индивидуальная наценка: {{ order.door.personal_margin }} p.</p>
+    {% else %}
+    <p>Индивидуальная наценка: <span class="badge bg-danger">небходимо указать</span></p>
+    {% endif %}
 </div>
-<div align="center"></div>
+<div align="center">
+    <h2> Информация о заказчике</h2>
+    <p><i class="fas fa-phone-alt"></i> Номер телефона заказчика: {{ order.user_phone }}</p>
+    <p><i class="fas fa-at"></i> E-mail заказчика: {{ order.user_email }}</p>
+</div>
+<div class="col-12" align="center">
+    {% if order.user_email %}
+    <button type="button" class="btn btn-lg btn-primary" name="send_check_order">Отправить счёт на оплату</button>
+    {% else %}
+    <h3>Не указана почта заказчика</h3>
+    <button type="button" class="btn btn-lg btn-primary" disabled>Отправить счёт на оплату</button>
+    {% endif %}
+</div>
 {% endblock %}

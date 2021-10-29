@@ -10,7 +10,7 @@
         <img src="{{ object.door.image.url }}" style="width: 100px;">
         {% endif %}
         <h2>Информация о двери:</h2>
-        {% if object.active == True %}
+        {% if object.active %}
         <span class="badge bg-info text-dark">В работе</span>
         ev0NyenP0UxLkY231UKA
         {% else %}
@@ -71,6 +71,9 @@
         <h2>Операции с заказом</h2>
         <a href="{% url 'edit_order_manager' object.pk %}" class="btn btn-primary">Редактировать заявку</a>
         <a href="{% url 'send_edt_check' object.pk %}" class="btn btn-warning">Отправить счёт на оплату</a>
+    </div>
+    <div align="center">
+        <a style='margin-top:10px;' href="{% url 'edit_order_manager' object.pk %}" class="btn btn-primary">Завершить заказ</a>
     </div>
 </div>
 {% endblock %}
