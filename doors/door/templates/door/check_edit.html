@@ -59,12 +59,16 @@
     <p><i class="fas fa-phone-alt"></i> Номер телефона заказчика: {{ order.user_phone }}</p>
     <p><i class="fas fa-at"></i> E-mail заказчика: {{ order.user_email }}</p>
 </div>
-<div class="col-12" align="center">
-    {% if order.user_email %}
-    <a href="{% url 'edit_order_manager' object.pk %}" class="btn btn-primary" name="send_check_order">Отправить счёт на оплату</a>
-    {% else %}
-    <h3>Не указана почта заказчика</h3>
-    <a href="{% url 'edit_order_manager' object.pk %}" class="btn btn-primary" name="send_check_order">Редактировать заявку</a>
-    {% endif %}
-</div>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="col-12" align="center">
+        {% if order.user_email %}
+         <button class="btn btn-primary" type="submit" name="add_order">Отправить счёт на оплату</button>
+        {% else %}
+        <h3>Не указана почта заказчика</h3>
+        <a href="" class="btn btn-primary" name="send_check_order" methods="post">Редактировать заявку</a>
+        {% endif %}
+    </div>
+</form>
 {% endblock %}

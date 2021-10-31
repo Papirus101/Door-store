@@ -70,7 +70,7 @@
     <div align="center">
         <h2>Операции с заказом</h2>
         <a href="{% url 'edit_order_manager' object.pk %}" class="btn btn-primary">Редактировать заявку</a>
-        <a href="{% url 'send_edt_check' object.pk %}" class="btn btn-warning">Отправить счёт на оплату</a>
+        <a href="{% url 'send_edit_check' object.pk %}" class="btn btn-warning">Отправить счёт на оплату</a>
     </div>
     <div align="center">
         <a style='margin-top:10px;' href="{% url 'edit_order_manager' object.pk %}" class="btn btn-primary">Завершить заказ</a>

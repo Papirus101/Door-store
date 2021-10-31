@@ -1,7 +1,6 @@
 /venv/
 /.idea/
 /doors/db.sqlite3
-/.gitignore
 /doors/media
 /doors/door/migrations
 /doors/.env

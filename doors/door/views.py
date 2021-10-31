@@ -9,12 +9,11 @@ from django.views.generic.base import View
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import NewDoorOrder, ProfileRegister, UserRegisterForm, LoginUserForm, NewOrderForm
+from .forms import NewDoorOrder, ProfileRegister, UserRegisterForm, LoginUserForm, NewOrderForm, OrderCheckForm
 from .logic.calculate import calculate_door
+from .logic.document import genereta_check, send_mail_check
 
 from .models import Door, Order, Profile
-
-from django.core.mail import send_mail
 
 
 class Index(ListView):
@@ -48,6 +47,7 @@ class OrderDetail(LoginRequiredMixin, DetailView):
     model = Order
 
     def get_context_data(self, **kwargs):
+        """ Меняет флаг is_view заказа """
         context = super().get_context_data(**kwargs)
         order_check = get_object_or_404(Order, pk=self.kwargs['pk'])
         if not order_check.is_view:
@@ -100,7 +100,7 @@ def logout_user(request):
 
 
 def save_order(user, form_order, door) -> None:
-    """ Сохраняет новый заказ и выдаёт пользователю """
+    """ Сохраняет новый заказ и выдаёт менеджеру """
     new_order = form_order.save()
     new_order.door = door
     new_order.save()
@@ -178,12 +178,17 @@ class EditOrderManager(View):
         return render(request, 'door/constructor.html', context)
 
 
-class CheckEdit(DetailView):
+class CheckEdit(View):
     """ Подготовка к отправке счёта """
-    model = Order
-    template_name = 'door/check_edit.html'
-    context_object_name = 'order'
+    def get(self, request, *args, **kwargs):
+        order = Order.objects.get(pk=kwargs['pk'])
+        form = OrderCheckForm()
+        context = {'order': order, 'form': form}
+        return render(request, 'door/check_edit.html', context)
 
-
-def send_order(request):
-    pass
+    def post(self, request, *args, **kwargs):
+        form = OrderCheckForm(request.POST)
+        if form.is_valid():
+            order = Order.objects.get(pk=kwargs['pk'])
+            genereta_check(form, order)
+            send_mail_check([order.user_email])
