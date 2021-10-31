@@ -79,7 +79,7 @@ class NewOrderForm(forms.ModelForm):
             'company_name': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-    def __init__(self, manager: bool = False, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super(NewOrderForm, self).__init__(*args, **kwargs)
-        if manager is False:
+        if not has_group(user):
             self.fields['company_name'].widget = forms.HiddenInput()

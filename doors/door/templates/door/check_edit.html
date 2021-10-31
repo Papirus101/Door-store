@@ -61,10 +61,10 @@
 </div>
 <div class="col-12" align="center">
     {% if order.user_email %}
-    <button type="button" class="btn btn-lg btn-primary" name="send_check_order">Отправить счёт на оплату</button>
+    <a href="{% url 'edit_order_manager' object.pk %}" class="btn btn-primary" name="send_check_order">Отправить счёт на оплату</a>
     {% else %}
     <h3>Не указана почта заказчика</h3>
-    <button type="button" class="btn btn-lg btn-primary" disabled>Отправить счёт на оплату</button>
+    <a href="{% url 'edit_order_manager' object.pk %}" class="btn btn-primary" name="send_check_order">Редактировать заявку</a>
     {% endif %}
 </div>
 {% endblock %}

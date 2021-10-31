@@ -178,9 +178,12 @@ class EditOrderManager(View):
         return render(request, 'door/constructor.html', context)
 
 
-class CheckEdit(View):
+class CheckEdit(DetailView):
     """ Подготовка к отправке счёта """
+    model = Order
+    template_name = 'door/check_edit.html'
+    context_object_name = 'order'
 
-    def get(self, request, *args, **kwargs):
-        order = Order.objects.get(pk=kwargs['pk'])
-        return render(request, 'door/check_edit.html', {'order': order})
+
+def send_order(request):
+    pass
