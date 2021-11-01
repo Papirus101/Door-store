@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import NewDoorOrder, ProfileRegister, UserRegisterForm, LoginUserForm, NewOrderForm, OrderCheckForm
 from .logic.calculate import calculate_door
-from .logic.document import genereta_check, send_mail_check
+from .logic.document import SendCheckOrder
 
 from .models import Door, Order, Profile
 
@@ -190,5 +190,6 @@ class CheckEdit(View):
         form = OrderCheckForm(request.POST)
         if form.is_valid():
             order = Order.objects.get(pk=kwargs['pk'])
-            genereta_check(form, order)
-            send_mail_check([order.user_email])
+            SendCheckOrder.genereta_check(form, order)
+            SendCheckOrder.send_mail_check([order.user_email])
+            return redirect('index')

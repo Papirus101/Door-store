@@ -2,14 +2,13 @@ from django.contrib.auth.models import Group
 from django.template import Context, Template
 from django.test import TestCase
 
-from .models import Door, SashDoor, StyleDoor, MaterialDoor, CloserDoor, Profile, Order
+from .models import Door, SashDoor, StyleDoor, MaterialDoor, CloserDoor, Order
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 from django.test import Client
 
 from .logic.calculate import calculate_door
-from .forms import NewDoorOrder
 
 User = get_user_model()
 
